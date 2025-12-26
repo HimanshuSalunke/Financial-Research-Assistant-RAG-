@@ -41,7 +41,7 @@ def process_document(file_path: str) -> str:
     This function:
     1. Loads the PDF using PyPDFLoader
     2. Splits the text into chunks with overlap
-    3. Creates embeddings using HuggingFace embeddings
+    3. Creates embeddings using BAAI/BGE embeddings
     4. Saves to FAISS vector store (appends if store exists)
     
     Args:
@@ -101,10 +101,10 @@ def process_document(file_path: str) -> str:
         logger.info(f"Split document into {len(chunks)} chunks")
         
         # Step 3: Create embeddings
-        # Why HuggingFace embeddings?
-        # - Pre-trained models optimized for semantic similarity
-        # - all-MiniLM-L6-v2: Good balance of speed and quality
-        # - Runs locally (no API calls needed for embeddings)
+        # Why BGE (BAAI General Embeddings)?
+        # - Top-ranked on MTEB (Massive Text Embedding Benchmark)
+        # - Significantly better retrieval performance than older MiniLM
+        # - optimized for retrieval-augmented generation tasks
         # Determine device (CUDA if available, else CPU)
         # Why check CUDA availability?
         # - Graceful fallback if GPU not available
@@ -125,9 +125,13 @@ def process_document(file_path: str) -> str:
                 self.model = SentenceTransformer(model_name, device=device)
             
             def embed_documents(self, texts):
+                # BGE MTEB leaderboard recommendation:
+                # No instruction needed for documents, only for queries
                 return self.model.encode(texts, normalize_embeddings=True).tolist()
             
             def embed_query(self, text: str):
+                # PRO TIP: BGE models need this prefix for queries to work 10x better
+                text = f"Represent this sentence for searching relevant passages: {text}"
                 return self.model.encode([text], normalize_embeddings=True)[0].tolist()
         
         embeddings = SentenceTransformerEmbeddings(

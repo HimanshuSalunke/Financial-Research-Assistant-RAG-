@@ -278,5 +278,5 @@ if prompt := st.chat_input("Ask a question about your financial documents..."):
 
 # Footer
 st.markdown("---")
-st.caption("Powered by LangChain, HuggingFace, and FAISS | GPU Accelerated with 4-bit Quantization")
+st.caption("Powered by Phi-3, BGE Embeddings, and LlamaCpp | GPU Accelerated with GGUF Quantization")
 

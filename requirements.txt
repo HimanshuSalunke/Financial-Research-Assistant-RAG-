@@ -4,53 +4,29 @@ uvicorn[standard]==0.27.0
 python-multipart==0.0.6
 
 # LangChain
-# Downgraded to versions compatible with PyTorch 1.13.1
-langchain>=0.3.0
-langchain-community>=0.3.0
-# Note: langchain-huggingface may have issues, we'll use direct HuggingFace embeddings instead
-# langchain-huggingface>=0.1.0  # Commented out - will use alternative approach
+# Compatible with LlamaCpp
+langchain>=0.1.0
+langchain-community>=0.0.10
 
 # Vector store and embeddings
-# Note: faiss-gpu requires specific CUDA setup and may not be available on PyPI
-# Using faiss-cpu (works everywhere, GPU acceleration comes from embeddings/LLM)
 faiss-cpu==1.7.4
-# Downgraded to be compatible with transformers 4.30.2 and PyTorch 1.13.1
-sentence-transformers>=2.2.0,<2.3.0
+sentence-transformers>=2.2.0
 
-# GPU support and quantization
-# Note: Using PyTorch 1.13.1+cu117 for GPU compatibility
-# Install separately: pip install --user torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu117
-# torch==1.13.1+cu117  # Install manually with CUDA support
-# torchvision==0.14.1+cu117  # Install manually
-# Transformers version compatible with PyTorch 1.13.1
-transformers>=4.21.0,<4.31.0
-# Note: bitsandbytes is NOT compatible with PyTorch 1.13.1
-# Skipping quantization - GPT-2 is small enough to fit without it
-# bitsandbytes>=0.41.0  # Commented out - not compatible with PyTorch 1.13.1
-# Downgrade accelerate to work with older huggingface-hub and PyTorch 1.13.1
-accelerate>=0.20.0,<0.21.0
-scipy>=1.11.0
-# NumPy version matching your GPU setup
-numpy==1.24.4
-
-# PDF processing
-pypdf==4.0.1
-
-# Environment and configuration
-python-dotenv==1.0.0
-# Updated to >=2.7.4 to satisfy newer LangChain requirements
-pydantic>=2.7.4
-pydantic-settings>=2.1.0
-
-# HuggingFace
-# Version compatible with sentence-transformers 2.2.2 and transformers 4.30.2
-# This version has cached_download which sentence-transformers 2.2.2 needs
-huggingface-hub>=0.14.1,<0.17.0
+# GPU support for local LLM
+# Note: Installed with CMAKE_ARGS="-DGGML_CUDA=on"
+llama-cpp-python>=0.2.20
 
 # Utilities
+scipy>=1.11.0
+numpy==1.24.4
+pypdf==4.0.1
+python-dotenv==1.0.0
+pydantic>=2.0
+pydantic-settings>=2.0
 httpx==0.26.0
 
 # Frontend
 streamlit>=1.28.0
 requests>=2.31.0
+tqdm
 

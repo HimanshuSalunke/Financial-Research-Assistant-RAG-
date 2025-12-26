@@ -7,23 +7,23 @@ A production-ready system for document-based question answering using Retrieval-
 ### RAG Pipeline Overview
 
 ```
-PDF Document → Text Extraction → Chunking → Embeddings (GPU) → FAISS Vector Store
-                                                              ↓
-User Query → Embedding → Similarity Search → Retrieved Context → LLM (GPU) → Answer
+PDF Document → Text Extraction → Chunking (1200 chars) → Embeddings (BGE/GPU) → FAISS Vector Store
+                                                               ↓
+User Query → BGE Embedding → Similarity Search → Retrieved Context → Phi-3 Mini (GPU/LlamaCpp) → Answer
 ```
 
 ### Key Components
 
 1. **Document Ingestion** (`app/services/ingest.py`)
    - Loads PDF documents using PyPDF
-   - Splits text into semantic chunks with overlap (500 chars, 50 overlap)
-   - Creates embeddings using HuggingFace sentence transformers (GPU accelerated)
+   - Splits text into semantic chunks with overlap (1200 chars, 200 overlap)
+   - Creates embeddings using BAAI/BGE-Small-EN-v1.5 (GPU accelerated)
    - Stores vectors in FAISS for fast similarity search
 
 2. **RAG Engine** (`app/services/rag.py`)
    - Loads FAISS vector store
    - Retrieves relevant document chunks for queries
-   - Uses GPT-2 LLM (GPU accelerated) to generate answers
+   - Uses Microsoft Phi-3 Mini 4K Instruct (Quantized GGUF on GPU)
    - Returns answers with source attribution
 
 3. **REST API** (`app/main.py`)
@@ -40,9 +40,9 @@ User Query → Embedding → Similarity Search → Retrieved Context → LLM (GP
 
 ### Prerequisites
 
-- Python 3.9 or higher
-- NVIDIA GPU with CUDA support (recommended) - tested on RTX 4050 (6GB VRAM)
-- HuggingFace account (free) - for downloading models
+- Python 3.10
+- NVIDIA GPU with CUDA support (Recommended: RTX series)
+- CUDA Toolkit 11.7+ (Compatible with PyTorch 1.13.1)
 
 ### Installation
 
@@ -213,8 +213,10 @@ Financial Research Assistant (RAG)/
 
 ### Models Used
 
-- **LLM**: GPT-2 (548MB) - Compatible with PyTorch 1.13.1, runs on GPU
-- **Embeddings**: sentence-transformers/all-MiniLM-L6-v2 (90MB) - GPU accelerated
+### Models Used
+
+- **LLM**: Microsoft Phi-3 Mini 4K Instruct (3.8B) - GGUF Quantized, runs 100% on GPU via LlamaCpp
+- **Embeddings**: BAAI/bge-small-en-v1.5 - State-of-the-art retrieval model, GPU accelerated
 - **Vector Store**: FAISS (CPU version) - Fast similarity search
 
 ## 💻 System Requirements
